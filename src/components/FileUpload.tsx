@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 
 interface FileUploadProps {
   onFileUpload: (files: File[]) => Promise<boolean>;
@@ -24,7 +24,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, serverUrl }) => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       uploadFiles(files);
@@ -52,16 +52,16 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, serverUrl }) => {
         }, 1000);
       } else {
         setIsUploading(false);
-        alert('Upload failed. Please try again.');
+        alert("Upload failed. Please try again.");
       }
     } catch (error) {
       setIsUploading(false);
-      alert('Upload failed. Please try again.');
+      alert("Upload failed. Please try again.");
     }
 
     // Reset file input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -72,7 +72,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, serverUrl }) => {
   return (
     <div className="file-upload">
       <div
-        className={`upload-area ${isDragging ? 'dragging' : ''} ${isUploading ? 'uploading' : ''}`}
+        className={`upload-area ${isDragging ? "dragging" : ""} ${
+          isUploading ? "uploading" : ""
+        }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -83,34 +85,29 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, serverUrl }) => {
           type="file"
           multiple
           onChange={handleFileSelect}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
         />
-        
+
         {isUploading ? (
           <div className="upload-progress">
             <div className="upload-icon">📤</div>
             <div className="upload-text">Uploading files...</div>
             <div className="progress-bar">
-              <div 
-                className="progress-fill" 
+              <div
+                className="progress-fill"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
           </div>
         ) : (
           <>
-            <div className="upload-icon">
-              {isDragging ? '📂' : '📁'}
-            </div>
+            <div className="upload-icon">{isDragging ? "📂" : "📁"}</div>
             <div className="upload-text">
-              {isDragging 
-                ? 'Drop files here to upload' 
-                : 'Drag & drop files here or click to browse'
-              }
+              {isDragging
+                ? "Drop files here to upload"
+                : "Drag & drop files here or click to browse"}
             </div>
-            <div className="upload-hint">
-              Maximum file size: 100MB
-            </div>
+            <div className="upload-hint">Maximum file size: 100MB</div>
           </>
         )}
       </div>

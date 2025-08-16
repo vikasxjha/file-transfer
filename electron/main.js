@@ -1,11 +1,18 @@
-const { app, BrowserWindow, Menu, shell, ipcMain, dialog } = require('electron');
-const path = require('path');
-const { startServer } = require('./server');
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  shell,
+  ipcMain,
+  dialog,
+} = require("electron");
+const path = require("path");
+const { startServer } = require("./server");
 
 let mainWindow;
 let serverInstance;
 let serverPort = 3001;
-let serverUrl = '';
+let serverUrl = "";
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -14,22 +21,22 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true
+      enableRemoteModule: true,
     },
-    icon: path.join(__dirname, '../assets/icon.png')
+    icon: path.join(__dirname, "../assets/icon.png"),
   });
 
   // Load the React app
-  const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+  const isDev = process.env.NODE_ENV === "development" || !app.isPackaged;
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 
   // Handle window closed
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     mainWindow = null;
   });
 
@@ -42,16 +49,16 @@ async function startFileServer() {
     const result = await startServer(serverPort);
     serverInstance = result.server;
     serverUrl = result.url;
-    
+
     // Send server info to renderer process
     if (mainWindow) {
-      mainWindow.webContents.send('server-started', {
+      mainWindow.webContents.send("server-started", {
         url: serverUrl,
-        port: serverPort
+        port: serverPort,
       });
     }
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     // Try a different port
     serverPort = Math.floor(Math.random() * 1000) + 3000;
     startFileServer();
@@ -59,21 +66,21 @@ async function startFileServer() {
 }
 
 // IPC handlers
-ipcMain.handle('get-server-info', () => {
+ipcMain.handle("get-server-info", () => {
   return {
     url: serverUrl,
-    port: serverPort
+    port: serverPort,
   };
 });
 
-ipcMain.handle('open-folder-dialog', async () => {
+ipcMain.handle("open-folder-dialog", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory']
+    properties: ["openDirectory"],
   });
   return result;
 });
 
-ipcMain.handle('open-shared-folder', (event, folderPath) => {
+ipcMain.handle("open-shared-folder", (event, folderPath) => {
   shell.openPath(folderPath);
 });
 
@@ -81,19 +88,19 @@ ipcMain.handle('open-shared-folder', (event, folderPath) => {
 app.whenReady().then(() => {
   createWindow();
 
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
   });
 });
 
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   if (serverInstance) {
     serverInstance.close();
   }
-  
-  if (process.platform !== 'darwin') {
+
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
@@ -101,73 +108,70 @@ app.on('window-all-closed', () => {
 // Create application menu
 const template = [
   {
-    label: 'File',
+    label: "File",
     submenu: [
       {
-        label: 'Select Shared Folder',
-        accelerator: 'CmdOrCtrl+O',
+        label: "Select Shared Folder",
+        accelerator: "CmdOrCtrl+O",
         click: () => {
           if (mainWindow) {
-            mainWindow.webContents.send('open-folder-selector');
+            mainWindow.webContents.send("open-folder-selector");
           }
-        }
+        },
       },
       {
-        label: 'Open Shared Folder',
-        accelerator: 'CmdOrCtrl+Shift+O',
+        label: "Open Shared Folder",
+        accelerator: "CmdOrCtrl+Shift+O",
         click: () => {
           if (mainWindow) {
-            mainWindow.webContents.send('open-shared-folder');
+            mainWindow.webContents.send("open-shared-folder");
           }
-        }
+        },
       },
-      { type: 'separator' },
+      { type: "separator" },
       {
-        label: 'Quit',
-        accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
+        label: "Quit",
+        accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
         click: () => {
           app.quit();
-        }
-      }
-    ]
+        },
+      },
+    ],
   },
   {
-    label: 'View',
+    label: "View",
     submenu: [
-      { role: 'reload' },
-      { role: 'forceReload' },
-      { role: 'toggleDevTools' },
-      { type: 'separator' },
-      { role: 'resetZoom' },
-      { role: 'zoomIn' },
-      { role: 'zoomOut' },
-      { type: 'separator' },
-      { role: 'togglefullscreen' }
-    ]
+      { role: "reload" },
+      { role: "forceReload" },
+      { role: "toggleDevTools" },
+      { type: "separator" },
+      { role: "resetZoom" },
+      { role: "zoomIn" },
+      { role: "zoomOut" },
+      { type: "separator" },
+      { role: "togglefullscreen" },
+    ],
   },
   {
-    label: 'Window',
-    submenu: [
-      { role: 'minimize' },
-      { role: 'close' }
-    ]
-  }
+    label: "Window",
+    submenu: [{ role: "minimize" }, { role: "close" }],
+  },
 ];
 
-if (process.platform === 'darwin') {
+if (process.platform === "darwin") {
   template.unshift({
     label: app.getName(),
     submenu: [
-      { role: 'about' },
-      { type: 'separator' },
-      { role: 'services' },
-      { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideOthers' },
-      { role: 'unhide' },
-      { type: 'separator' },
-      { role: 'quit' }
-    ]
+      { role: "about" },
+      { type: "separator" },
+      { role: "services" },
+      { type: "separator" },
+      { role: "hide" },
+      { role: "hideOthers" },
+      { role: "unhide" },
+      { type: "separator" },
+      { role: "quit" },
+    ],
   });
 }
 

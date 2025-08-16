@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface FileInfo {
   name: string;
@@ -12,23 +12,29 @@ interface FileListProps {
   serverUrl: string;
 }
 
-const FileList: React.FC<FileListProps> = ({ files, onFileDelete, serverUrl }) => {
+const FileList: React.FC<FileListProps> = ({
+  files,
+  onFileDelete,
+  serverUrl,
+}) => {
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
   const handleDownload = (filename: string) => {
-    const downloadUrl = `${serverUrl}/api/download/${encodeURIComponent(filename)}`;
-    const link = document.createElement('a');
+    const downloadUrl = `${serverUrl}/api/download/${encodeURIComponent(
+      filename
+    )}`;
+    const link = document.createElement("a");
     link.href = downloadUrl;
     link.download = filename;
     document.body.appendChild(link);
@@ -40,7 +46,7 @@ const FileList: React.FC<FileListProps> = ({ files, onFileDelete, serverUrl }) =
     if (window.confirm(`Are you sure you want to delete "${filename}"?`)) {
       const success = await onFileDelete(filename);
       if (!success) {
-        alert('Failed to delete file. Please try again.');
+        alert("Failed to delete file. Please try again.");
       }
     }
   };
@@ -65,7 +71,7 @@ const FileList: React.FC<FileListProps> = ({ files, onFileDelete, serverUrl }) =
       <div className="file-list-header">
         <h3>Shared Files ({files.length})</h3>
       </div>
-      
+
       <div className="file-table">
         <div className="file-table-header">
           <div className="file-name">Name</div>
@@ -73,7 +79,7 @@ const FileList: React.FC<FileListProps> = ({ files, onFileDelete, serverUrl }) =
           <div className="file-modified">Modified</div>
           <div className="file-actions">Actions</div>
         </div>
-        
+
         <div className="file-table-body">
           {files.map((file) => (
             <div key={file.name} className="file-row">

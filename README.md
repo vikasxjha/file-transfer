@@ -12,7 +12,7 @@
 
 **A beautiful, privacy-focused cross-platform file sharing application for local networks**
 
-*Share files instantly between devices without the cloud - secure, fast, and completely local*
+_Share files instantly between devices without the cloud - secure, fast, and completely local_
 
 [🚀 Quick Start](#installation) • [📖 Documentation](#usage) • [🛠️ Development](#development) • [🎯 Features](#features)
 
@@ -24,20 +24,20 @@
 
 <div align="center">
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| 🗂️ **Local Network Sharing** | Share files between devices without cloud storage | ✅ |
-| 📱 **QR Code Connectivity** | Quick device connection via QR code scanning | ✅ |
-| 🖥️ **Cross-Platform** | Works seamlessly on Windows, Mac, and Linux | ✅ |
-| 🌐 **Web Interface** | Access via browser from any device on the network | ✅ |
-| 📁 **Smart Folder Management** | Choose and manage custom shared folders | ✅ |
-| 🔄 **Real-time Updates** | Live file sync using WebSocket technology | ✅ |
-| 🎨 **Modern UI/UX** | Beautiful glassmorphism design with intuitive interface | ✅ |
-| 🔒 **Privacy Focused** | Zero cloud dependency - everything stays local | ✅ |
-| 📤 **Drag & Drop** | Effortless file upload with visual progress tracking | ✅ |
-| 🗑️ **File Management** | Download, delete, and organize files seamlessly | ✅ |
-| ⚡ **High Performance** | Optimized for large files up to 100MB | ✅ |
-| 🔧 **Auto-Discovery** | Automatic network IP detection and port management | ✅ |
+| Feature                        | Description                                             | Status |
+| ------------------------------ | ------------------------------------------------------- | ------ |
+| 🗂️ **Local Network Sharing**   | Share files between devices without cloud storage       | ✅     |
+| 📱 **QR Code Connectivity**    | Quick device connection via QR code scanning            | ✅     |
+| 🖥️ **Cross-Platform**          | Works seamlessly on Windows, Mac, and Linux             | ✅     |
+| 🌐 **Web Interface**           | Access via browser from any device on the network       | ✅     |
+| 📁 **Smart Folder Management** | Choose and manage custom shared folders                 | ✅     |
+| 🔄 **Real-time Updates**       | Live file sync using WebSocket technology               | ✅     |
+| 🎨 **Modern UI/UX**            | Beautiful glassmorphism design with intuitive interface | ✅     |
+| 🔒 **Privacy Focused**         | Zero cloud dependency - everything stays local          | ✅     |
+| 📤 **Drag & Drop**             | Effortless file upload with visual progress tracking    | ✅     |
+| 🗑️ **File Management**         | Download, delete, and organize files seamlessly         | ✅     |
+| ⚡ **High Performance**        | Optimized for large files up to 100MB                   | ✅     |
+| 🔧 **Auto-Discovery**          | Automatic network IP detection and port management      | ✅     |
 
 </div>
 
@@ -59,6 +59,7 @@ graph TB
 ```
 
 **Modern Tech Stack:**
+
 - **Frontend**: React 18 + TypeScript + Modern CSS
 - **Backend**: Express.js + Socket.IO + Multer
 - **Desktop**: Electron with native system integration
@@ -78,20 +79,24 @@ graph TB
 ### 🔧 Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/your-username/local-file-share.git
    cd local-file-share
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Start development mode:**
+
    ```bash
    npm run dev
    ```
+
    This launches both the React development server and Electron app simultaneously.
 
 4. **Build for production:**
@@ -101,6 +106,7 @@ graph TB
    ```
 
 ### ⚡ One-Line Setup
+
 ```bash
 git clone https://github.com/your-username/local-file-share.git && cd local-file-share && npm install && npm run dev
 ```
@@ -116,11 +122,13 @@ git clone https://github.com/your-username/local-file-share.git && cd local-file
 </div>
 
 1. **Launch the Application**
+
    - The app automatically starts the file sharing server
    - Your local IP and port are displayed prominently
    - A QR code is generated for easy mobile access
 
 2. **Configure Shared Folder**
+
    ```
    📁 Default: ~/LocalFileShare
    🔧 Custom: Use "Change Folder" button
@@ -136,28 +144,31 @@ git clone https://github.com/your-username/local-file-share.git && cd local-file
 
 <div align="center">
 
-| Method | Steps | Best For |
-|--------|-------|----------|
-| 📱 **QR Code** | Scan with camera app → Open link | Mobile devices |
-| 🔗 **Direct URL** | Copy URL → Paste in browser | Desktop/laptop |
-| 📋 **Manual Entry** | Type `http://[ip]:3001` | Any device |
+| Method              | Steps                            | Best For       |
+| ------------------- | -------------------------------- | -------------- |
+| 📱 **QR Code**      | Scan with camera app → Open link | Mobile devices |
+| 🔗 **Direct URL**   | Copy URL → Paste in browser      | Desktop/laptop |
+| 📋 **Manual Entry** | Type `http://[ip]:3001`          | Any device     |
 
 </div>
 
 ### 📤 File Operations
 
 #### Upload Files
+
 - **Drag & Drop**: Simply drag files into the upload area
 - **Click to Browse**: Click the upload area to select files
 - **Progress Tracking**: Real-time upload progress with visual feedback
 - **Multi-file Support**: Upload multiple files simultaneously
 
 #### Download Files
+
 - **One-Click Download**: Click the download button next to any file
 - **Direct Browser Download**: Files download directly to your device
 - **Resume Support**: Interrupted downloads can be resumed
 
 #### Manage Files
+
 - **Delete Files**: Remove files with confirmation dialog
 - **Real-time Sync**: Changes appear instantly on all connected devices
 - **File Information**: View file size, modification date, and type
@@ -165,11 +176,13 @@ git clone https://github.com/your-username/local-file-share.git && cd local-file
 ### 🔧 Advanced Features
 
 #### Network Configuration
+
 - **Auto IP Detection**: Automatically finds your local network IP
 - **Port Management**: Automatically selects available ports (starts at 3001)
 - **Firewall Friendly**: Uses standard HTTP ports for compatibility
 
 #### Security & Privacy
+
 - **Local Only**: No data leaves your local network
 - **No Registration**: No accounts or personal information required
 - **Temporary Access**: No permanent connections or data storage
@@ -178,20 +191,21 @@ git clone https://github.com/your-username/local-file-share.git && cd local-file
 
 <div align="center">
 
-| Scenario | Solution | Benefits |
-|----------|----------|----------|
-| 📱➡️💻 **Phone to Computer** | Scan QR code, upload photos/videos | Quick media transfer |
-| 💻➡️📱 **Computer to Phone** | Copy URL, download files | Easy document sharing |
-| 👥 **Team Collaboration** | Share URL with team members | Instant file sharing |
-| 🏠 **Home Network** | Access from any device at home | Seamless device integration |
-| 🎓 **Classroom/Office** | One person hosts, others connect | Group file distribution |
-| 🔄 **Device Sync** | Keep files synchronized across devices | Real-time collaboration |
+| Scenario                     | Solution                               | Benefits                    |
+| ---------------------------- | -------------------------------------- | --------------------------- |
+| 📱➡️💻 **Phone to Computer** | Scan QR code, upload photos/videos     | Quick media transfer        |
+| 💻➡️📱 **Computer to Phone** | Copy URL, download files               | Easy document sharing       |
+| 👥 **Team Collaboration**    | Share URL with team members            | Instant file sharing        |
+| 🏠 **Home Network**          | Access from any device at home         | Seamless device integration |
+| 🎓 **Classroom/Office**      | One person hosts, others connect       | Group file distribution     |
+| 🔄 **Device Sync**           | Keep files synchronized across devices | Real-time collaboration     |
 
 </div>
 
 ## 🛠️ Development
 
 ### 📊 Project Structure
+
 ```
 local-file-share/
 ├── 📁 electron/              # Electron main process
@@ -216,30 +230,33 @@ local-file-share/
 
 ### 🎮 Available Scripts
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `npm run dev` | Start full development environment | 🔨 Active development |
-| `npm run dev:react` | React server only | 🌐 Frontend-only testing |
-| `npm run dev:electron` | Electron app only | 🖥️ Desktop-specific testing |
-| `npm run build` | Build React for production | 📦 Prepare for distribution |
-| `npm run build:electron` | Create distributable packages | 🚀 Final app packaging |
-| `npm run lint` | Check code quality | ✅ Code review |
-| `npm run type-check` | TypeScript validation | 🔍 Type safety verification |
+| Command                  | Purpose                            | When to Use                 |
+| ------------------------ | ---------------------------------- | --------------------------- |
+| `npm run dev`            | Start full development environment | 🔨 Active development       |
+| `npm run dev:react`      | React server only                  | 🌐 Frontend-only testing    |
+| `npm run dev:electron`   | Electron app only                  | 🖥️ Desktop-specific testing |
+| `npm run build`          | Build React for production         | 📦 Prepare for distribution |
+| `npm run build:electron` | Create distributable packages      | 🚀 Final app packaging      |
+| `npm run lint`           | Check code quality                 | ✅ Code review              |
+| `npm run type-check`     | TypeScript validation              | 🔍 Type safety verification |
 
 ### 🔧 Development Workflow
 
 1. **Setup Development Environment**
+
    ```bash
    npm install          # Install all dependencies
    npm run dev         # Start development servers
    ```
 
 2. **Frontend Development**
+
    ```bash
    npm run dev:react   # React development server (localhost:5173)
    ```
 
 3. **Backend/Electron Development**
+
    ```bash
    npm run dev:electron # Electron app with server
    ```
@@ -253,33 +270,41 @@ local-file-share/
 ### 🏗️ Building for Production
 
 #### Desktop Application
+
 ```bash
 npm run build:electron
 ```
+
 Creates platform-specific installers:
+
 - **Windows**: NSIS installer (`.exe`)
 - **macOS**: DMG package (`.dmg`)
 - **Linux**: AppImage (`.AppImage`)
 
 #### Web Application
+
 ```bash
 npm run build
 ```
+
 Creates optimized static files in `dist/` folder for web deployment.
 
 ## 🔧 Configuration
 
 ### 🌐 Network Settings
+
 - **Default Port**: 3001 (auto-increments if unavailable)
 - **Bind Address**: 0.0.0.0 (accepts connections from all network interfaces)
 - **File Size Limit**: 100MB per file (configurable in server.js)
 
 ### 📁 Folder Management
+
 - **Default Shared Folder**: `~/LocalFileShare`
 - **Custom Folders**: Select any accessible directory
 - **Auto-Creation**: Folders are created automatically if they don't exist
 
 ### 🔒 Security Features
+
 - **Local Network Only**: Server only accepts connections from local network
 - **No External Dependencies**: All processing happens locally
 - **File Validation**: Basic file type and size validation
@@ -293,6 +318,7 @@ Creates optimized static files in `dist/` folder for web deployment.
 **Problem**: Can't connect to the server from other devices
 
 **Solutions**:
+
 - ✅ Ensure all devices are on the same WiFi network
 - ✅ Check firewall settings (allow port 3001)
 - ✅ Verify the IP address is correct
@@ -307,6 +333,7 @@ Creates optimized static files in `dist/` folder for web deployment.
 **Problem**: Files won't upload or uploads fail
 
 **Solutions**:
+
 - ✅ Check file size (must be under 100MB)
 - ✅ Ensure sufficient disk space in shared folder
 - ✅ Verify folder permissions
@@ -321,6 +348,7 @@ Creates optimized static files in `dist/` folder for web deployment.
 **Problem**: Electron app won't start or crashes
 
 **Solutions**:
+
 - ✅ Update to latest Node.js version
 - ✅ Clear npm cache: `npm cache clean --force`
 - ✅ Reinstall dependencies: `rm -rf node_modules && npm install`
@@ -335,6 +363,7 @@ Creates optimized static files in `dist/` folder for web deployment.
 **Problem**: Web interface doesn't load or functions incorrectly
 
 **Solutions**:
+
 - ✅ Clear browser cache and cookies
 - ✅ Try a different browser
 - ✅ Disable browser extensions temporarily
@@ -346,18 +375,21 @@ Creates optimized static files in `dist/` folder for web deployment.
 ## 📈 Performance & Limitations
 
 ### ⚡ Performance Metrics
+
 - **Concurrent Users**: Up to 20 simultaneous connections
 - **File Transfer Speed**: Limited by network bandwidth
 - **Memory Usage**: ~50-100MB RAM for desktop app
 - **Startup Time**: 2-3 seconds typical startup
 
 ### 📏 Current Limitations
+
 - **File Size**: 100MB maximum per file
 - **File Types**: All types supported (no restrictions)
 - **Network Scope**: Local network only
 - **Simultaneous Uploads**: 5 files maximum
 
 ### 🔮 Future Enhancements
+
 - [ ] **Folder Upload**: Drag and drop entire folders
 - [ ] **File Compression**: Automatic compression for large files
 - [ ] **Transfer Encryption**: End-to-end encryption for sensitive files
@@ -374,6 +406,7 @@ Creates optimized static files in `dist/` folder for web deployment.
 We welcome contributions! Here's how you can help:
 
 ### 🎯 Ways to Contribute
+
 - 🐛 **Bug Reports**: Report issues with detailed descriptions
 - 💡 **Feature Requests**: Suggest new features and improvements
 - 🔧 **Code Contributions**: Submit pull requests with enhancements
@@ -382,6 +415,7 @@ We welcome contributions! Here's how you can help:
 - 🌍 **Localization**: Translate the app to different languages
 
 ### 📝 Development Guidelines
+
 1. **Fork** the repository
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
 3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
@@ -389,6 +423,7 @@ We welcome contributions! Here's how you can help:
 5. **Open** a Pull Request
 
 ### 🧪 Testing
+
 ```bash
 npm test              # Run test suite
 npm run test:watch   # Watch mode for development
@@ -400,6 +435,7 @@ npm run test:coverage # Generate coverage report
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ### 🔓 What this means:
+
 - ✅ **Commercial Use**: Use in commercial projects
 - ✅ **Modification**: Modify and adapt the code
 - ✅ **Distribution**: Distribute copies of the software
@@ -413,6 +449,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 **Inspired by the open-source community and the need for privacy-focused file sharing**
 
 Special thanks to:
+
 - 🚀 [**Transfer**](https://github.com/matan-h/Transfer) - Original inspiration
 - ⚛️ [**React Team**](https://reactjs.org/) - Amazing frontend framework
 - 🖥️ [**Electron**](https://www.electronjs.org/) - Cross-platform desktop apps

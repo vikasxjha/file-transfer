@@ -1,586 +1,623 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Local File Share</title>
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      .header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      .status.connected {
+        background: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+      }
+
+      .status.disconnected {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      }
+
+      .card h2 {
+        margin-bottom: 20px;
+        color: #2c3e50;
+      }
+
+      .upload-area {
+        border: 3px dashed #bdc3c7;
+        border-radius: 15px;
+        padding: 60px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .upload-area:hover,
+      .upload-area.drag-over {
+        border-color: #3498db;
+        background: rgba(52, 152, 219, 0.1);
+      }
+
+      .upload-area.uploading {
+        border-color: #27ae60;
+        background: rgba(39, 174, 96, 0.1);
+      }
+
+      .upload-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .upload-text {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .upload-hint {
+        color: #7f8c8d;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .file-list {
+        width: 100%;
+      }
+
+      .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+      }
+
+      .file-item:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-1px);
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .file-name {
+        font-weight: 500;
+        color: #2c3e50;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-size {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        font-family: monospace;
+      }
+
+      .file-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #27ae60, #229954);
+        color: white;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #7f8c8d;
+      }
+
+      .empty-state .icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .qr-section {
+        text-align: center;
+      }
+
+      .qr-code {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        display: inline-block;
+        margin: 20px 0;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 15px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #27ae60, #2ecc71);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .status.connected {
-            background: rgba(39, 174, 96, 0.1);
-            color: #27ae60;
-        }
-
-        .status.disconnected {
-            background: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-        }
-
-        .card h2 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
-        .upload-area {
-            border: 3px dashed #bdc3c7;
-            border-radius: 15px;
-            padding: 60px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .upload-area:hover,
-        .upload-area.drag-over {
-            border-color: #3498db;
-            background: rgba(52, 152, 219, 0.1);
-        }
-
-        .upload-area.uploading {
-            border-color: #27ae60;
-            background: rgba(39, 174, 96, 0.1);
-        }
-
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        .upload-text {
-            font-size: 1.2rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .upload-hint {
-            color: #7f8c8d;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-list {
-            width: 100%;
+          font-size: 2rem;
         }
 
         .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            transition: all 0.2s ease;
-        }
-
-        .file-item:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px);
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .file-name {
-            font-weight: 500;
-            color: #2c3e50;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .file-size {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            font-family: monospace;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
         }
 
         .file-actions {
-            display: flex;
-            gap: 8px;
+          width: 100%;
+          justify-content: center;
         }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #27ae60, #229954);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .qr-section {
-            text-align: center;
-        }
-
-        .qr-code {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin: 20px 0;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .file-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .file-actions {
-                width: 100%;
-                justify-content: center;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>🗂️ Local File Share</h1>
-            <div id="status" class="status disconnected">
-                <span>●</span>
-                <span id="status-text">Connecting...</span>
-            </div>
+      <div class="header">
+        <h1>🗂️ Local File Share</h1>
+        <div id="status" class="status disconnected">
+          <span>●</span>
+          <span id="status-text">Connecting...</span>
         </div>
+      </div>
 
-        <div class="main-content">
-            <div class="card">
-                <h2>📤 Upload Files</h2>
-                <div id="upload-area" class="upload-area">
-                    <input type="file" id="file-input" class="file-input" multiple>
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Drag & drop files here or click to browse</div>
-                    <div class="upload-hint">Maximum file size: 100MB</div>
-                </div>
-                <div id="progress-container" style="display: none;">
-                    <div class="progress-bar">
-                        <div id="progress-fill" class="progress-fill"></div>
-                    </div>
-                    <div id="progress-text" style="text-align: center; margin-top: 10px;"></div>
-                </div>
-            </div>
-
-            <div class="card qr-section">
-                <h2>📱 Quick Connect</h2>
-                <p>Scan QR code or share URL with other devices</p>
-                <div class="qr-code">
-                    <img id="qr-image" src="" alt="QR Code" style="width: 200px; height: 200px;">
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <input type="text" id="share-url" readonly style="flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-family: monospace;">
-                    <button id="copy-url" class="btn btn-primary">📋 Copy</button>
-                </div>
-            </div>
-        </div>
-
+      <div class="main-content">
         <div class="card">
-            <h2>📁 Shared Files (<span id="file-count">0</span>)</h2>
-            <div id="file-list" class="file-list">
-                <div class="empty-state">
-                    <div class="icon">📂</div>
-                    <div>No files shared yet</div>
-                    <div>Upload some files to get started</div>
-                </div>
+          <h2>📤 Upload Files</h2>
+          <div id="upload-area" class="upload-area">
+            <input type="file" id="file-input" class="file-input" multiple />
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">
+              Drag & drop files here or click to browse
             </div>
+            <div class="upload-hint">Maximum file size: 100MB</div>
+          </div>
+          <div id="progress-container" style="display: none">
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div
+              id="progress-text"
+              style="text-align: center; margin-top: 10px"
+            ></div>
+          </div>
         </div>
+
+        <div class="card qr-section">
+          <h2>📱 Quick Connect</h2>
+          <p>Scan QR code or share URL with other devices</p>
+          <div class="qr-code">
+            <img
+              id="qr-image"
+              src=""
+              alt="QR Code"
+              style="width: 200px; height: 200px"
+            />
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 15px">
+            <input
+              type="text"
+              id="share-url"
+              readonly
+              style="
+                flex: 1;
+                padding: 10px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                font-family: monospace;
+              "
+            />
+            <button id="copy-url" class="btn btn-primary">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📁 Shared Files (<span id="file-count">0</span>)</h2>
+        <div id="file-list" class="file-list">
+          <div class="empty-state">
+            <div class="icon">📂</div>
+            <div>No files shared yet</div>
+            <div>Upload some files to get started</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-        // Global variables
-        let socket;
-        let isConnected = false;
-        const fileList = [];
+      // Global variables
+      let socket;
+      let isConnected = false;
+      const fileList = [];
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSocket();
-            setupFileUpload();
-            setupQRCode();
-            updateUI();
+      // Initialize the app
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeSocket();
+        setupFileUpload();
+        setupQRCode();
+        updateUI();
+      });
+
+      // Socket.IO connection
+      function initializeSocket() {
+        socket = io();
+
+        socket.on("connect", function () {
+          isConnected = true;
+          updateConnectionStatus();
+          socket.emit("request-files");
         });
 
-        // Socket.IO connection
-        function initializeSocket() {
-            socket = io();
-            
-            socket.on('connect', function() {
-                isConnected = true;
-                updateConnectionStatus();
-                socket.emit('request-files');
-            });
+        socket.on("disconnect", function () {
+          isConnected = false;
+          updateConnectionStatus();
+        });
 
-            socket.on('disconnect', function() {
-                isConnected = false;
-                updateConnectionStatus();
-            });
+        socket.on("files-list", function (files) {
+          fileList.length = 0;
+          fileList.push(...files);
+          renderFileList();
+        });
 
-            socket.on('files-list', function(files) {
-                fileList.length = 0;
-                fileList.push(...files);
-                renderFileList();
-            });
+        socket.on("files-updated", function (data) {
+          if (data.files) {
+            fileList.length = 0;
+            fileList.push(...data.files);
+          } else {
+            socket.emit("request-files");
+          }
+          renderFileList();
+        });
+      }
 
-            socket.on('files-updated', function(data) {
-                if (data.files) {
-                    fileList.length = 0;
-                    fileList.push(...data.files);
-                } else {
-                    socket.emit('request-files');
-                }
-                renderFileList();
-            });
+      // Update connection status
+      function updateConnectionStatus() {
+        const statusEl = document.getElementById("status");
+        const statusTextEl = document.getElementById("status-text");
+
+        if (isConnected) {
+          statusEl.className = "status connected";
+          statusTextEl.textContent = "Connected";
+        } else {
+          statusEl.className = "status disconnected";
+          statusTextEl.textContent = "Disconnected";
         }
+      }
 
-        // Update connection status
-        function updateConnectionStatus() {
-            const statusEl = document.getElementById('status');
-            const statusTextEl = document.getElementById('status-text');
-            
-            if (isConnected) {
-                statusEl.className = 'status connected';
-                statusTextEl.textContent = 'Connected';
+      // File upload functionality
+      function setupFileUpload() {
+        const uploadArea = document.getElementById("upload-area");
+        const fileInput = document.getElementById("file-input");
+
+        uploadArea.addEventListener("click", () => fileInput.click());
+        uploadArea.addEventListener("dragover", handleDragOver);
+        uploadArea.addEventListener("dragleave", handleDragLeave);
+        uploadArea.addEventListener("drop", handleDrop);
+        fileInput.addEventListener("change", handleFileSelect);
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        document.getElementById("upload-area").classList.add("drag-over");
+      }
+
+      function handleDragLeave(e) {
+        e.preventDefault();
+        document.getElementById("upload-area").classList.remove("drag-over");
+      }
+
+      function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById("upload-area").classList.remove("drag-over");
+        const files = Array.from(e.dataTransfer.files);
+        uploadFiles(files);
+      }
+
+      function handleFileSelect(e) {
+        const files = Array.from(e.target.files);
+        uploadFiles(files);
+        e.target.value = ""; // Reset input
+      }
+
+      async function uploadFiles(files) {
+        if (files.length === 0) return;
+
+        const uploadArea = document.getElementById("upload-area");
+        const progressContainer = document.getElementById("progress-container");
+        const progressFill = document.getElementById("progress-fill");
+        const progressText = document.getElementById("progress-text");
+
+        uploadArea.classList.add("uploading");
+        progressContainer.style.display = "block";
+        progressText.textContent = `Uploading ${files.length} file(s)...`;
+
+        const formData = new FormData();
+        files.forEach((file) => formData.append("files", file));
+
+        try {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.addEventListener("progress", (e) => {
+            if (e.lengthComputable) {
+              const percentage = (e.loaded / e.total) * 100;
+              progressFill.style.width = percentage + "%";
+            }
+          });
+
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              progressText.textContent = "Upload complete!";
+              setTimeout(() => {
+                uploadArea.classList.remove("uploading");
+                progressContainer.style.display = "none";
+                progressFill.style.width = "0%";
+              }, 1000);
             } else {
-                statusEl.className = 'status disconnected';
-                statusTextEl.textContent = 'Disconnected';
+              alert("Upload failed. Please try again.");
+              uploadArea.classList.remove("uploading");
+              progressContainer.style.display = "none";
             }
+          };
+
+          xhr.onerror = function () {
+            alert("Upload failed. Please try again.");
+            uploadArea.classList.remove("uploading");
+            progressContainer.style.display = "none";
+          };
+
+          xhr.open("POST", "/api/upload");
+          xhr.send(formData);
+        } catch (error) {
+          console.error("Upload error:", error);
+          alert("Upload failed. Please try again.");
+          uploadArea.classList.remove("uploading");
+          progressContainer.style.display = "none";
         }
+      }
 
-        // File upload functionality
-        function setupFileUpload() {
-            const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('file-input');
+      // QR Code setup
+      function setupQRCode() {
+        const currentUrl = window.location.origin;
+        const qrImage = document.getElementById("qr-image");
+        const shareUrlInput = document.getElementById("share-url");
+        const copyButton = document.getElementById("copy-url");
 
-            uploadArea.addEventListener('click', () => fileInput.click());
-            uploadArea.addEventListener('dragover', handleDragOver);
-            uploadArea.addEventListener('dragleave', handleDragLeave);
-            uploadArea.addEventListener('drop', handleDrop);
-            fileInput.addEventListener('change', handleFileSelect);
-        }
+        // Generate QR code using online service
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+          currentUrl
+        )}`;
+        qrImage.src = qrUrl;
 
-        function handleDragOver(e) {
-            e.preventDefault();
-            document.getElementById('upload-area').classList.add('drag-over');
-        }
+        shareUrlInput.value = currentUrl;
 
-        function handleDragLeave(e) {
-            e.preventDefault();
-            document.getElementById('upload-area').classList.remove('drag-over');
-        }
+        copyButton.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(currentUrl);
+            copyButton.textContent = "✅ Copied!";
+            setTimeout(() => {
+              copyButton.innerHTML = "📋 Copy";
+            }, 2000);
+          } catch (error) {
+            // Fallback for older browsers
+            shareUrlInput.select();
+            document.execCommand("copy");
+            copyButton.textContent = "✅ Copied!";
+            setTimeout(() => {
+              copyButton.innerHTML = "📋 Copy";
+            }, 2000);
+          }
+        });
+      }
 
-        function handleDrop(e) {
-            e.preventDefault();
-            document.getElementById('upload-area').classList.remove('drag-over');
-            const files = Array.from(e.dataTransfer.files);
-            uploadFiles(files);
-        }
+      // Render file list
+      function renderFileList() {
+        const fileListEl = document.getElementById("file-list");
+        const fileCountEl = document.getElementById("file-count");
 
-        function handleFileSelect(e) {
-            const files = Array.from(e.target.files);
-            uploadFiles(files);
-            e.target.value = ''; // Reset input
-        }
+        fileCountEl.textContent = fileList.length;
 
-        async function uploadFiles(files) {
-            if (files.length === 0) return;
-
-            const uploadArea = document.getElementById('upload-area');
-            const progressContainer = document.getElementById('progress-container');
-            const progressFill = document.getElementById('progress-fill');
-            const progressText = document.getElementById('progress-text');
-
-            uploadArea.classList.add('uploading');
-            progressContainer.style.display = 'block';
-            progressText.textContent = `Uploading ${files.length} file(s)...`;
-
-            const formData = new FormData();
-            files.forEach(file => formData.append('files', file));
-
-            try {
-                const xhr = new XMLHttpRequest();
-                
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percentage = (e.loaded / e.total) * 100;
-                        progressFill.style.width = percentage + '%';
-                    }
-                });
-
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        progressText.textContent = 'Upload complete!';
-                        setTimeout(() => {
-                            uploadArea.classList.remove('uploading');
-                            progressContainer.style.display = 'none';
-                            progressFill.style.width = '0%';
-                        }, 1000);
-                    } else {
-                        alert('Upload failed. Please try again.');
-                        uploadArea.classList.remove('uploading');
-                        progressContainer.style.display = 'none';
-                    }
-                };
-
-                xhr.onerror = function() {
-                    alert('Upload failed. Please try again.');
-                    uploadArea.classList.remove('uploading');
-                    progressContainer.style.display = 'none';
-                };
-
-                xhr.open('POST', '/api/upload');
-                xhr.send(formData);
-
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert('Upload failed. Please try again.');
-                uploadArea.classList.remove('uploading');
-                progressContainer.style.display = 'none';
-            }
-        }
-
-        // QR Code setup
-        function setupQRCode() {
-            const currentUrl = window.location.origin;
-            const qrImage = document.getElementById('qr-image');
-            const shareUrlInput = document.getElementById('share-url');
-            const copyButton = document.getElementById('copy-url');
-
-            // Generate QR code using online service
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-            qrImage.src = qrUrl;
-            
-            shareUrlInput.value = currentUrl;
-
-            copyButton.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(currentUrl);
-                    copyButton.textContent = '✅ Copied!';
-                    setTimeout(() => {
-                        copyButton.innerHTML = '📋 Copy';
-                    }, 2000);
-                } catch (error) {
-                    // Fallback for older browsers
-                    shareUrlInput.select();
-                    document.execCommand('copy');
-                    copyButton.textContent = '✅ Copied!';
-                    setTimeout(() => {
-                        copyButton.innerHTML = '📋 Copy';
-                    }, 2000);
-                }
-            });
-        }
-
-        // Render file list
-        function renderFileList() {
-            const fileListEl = document.getElementById('file-list');
-            const fileCountEl = document.getElementById('file-count');
-            
-            fileCountEl.textContent = fileList.length;
-
-            if (fileList.length === 0) {
-                fileListEl.innerHTML = `
+        if (fileList.length === 0) {
+          fileListEl.innerHTML = `
                     <div class="empty-state">
                         <div class="icon">📂</div>
                         <div>No files shared yet</div>
                         <div>Upload some files to get started</div>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            fileListEl.innerHTML = fileList.map(file => `
+        fileListEl.innerHTML = fileList
+          .map(
+            (file) => `
                 <div class="file-item">
                     <div class="file-info">
                         <span style="font-size: 1.2rem;">📄</span>
                         <div>
-                            <div class="file-name">${escapeHtml(file.name)}</div>
-                            <div class="file-size">${formatFileSize(file.size)}</div>
+                            <div class="file-name">${escapeHtml(
+                              file.name
+                            )}</div>
+                            <div class="file-size">${formatFileSize(
+                              file.size
+                            )}</div>
                         </div>
                     </div>
                     <div class="file-actions">
-                        <a href="/api/download/${encodeURIComponent(file.name)}" 
+                        <a href="/api/download/${encodeURIComponent(
+                          file.name
+                        )}" 
                            class="btn btn-success" 
                            download="${file.name}">
                             ⬇️ Download
                         </a>
                         <button class="btn btn-danger" 
-                                onclick="deleteFile('${escapeHtml(file.name)}')">
+                                onclick="deleteFile('${escapeHtml(
+                                  file.name
+                                )}')">
                             🗑️ Delete
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `
+          )
+          .join("");
+      }
+
+      // Delete file
+      async function deleteFile(filename) {
+        if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+          return;
         }
 
-        // Delete file
-        async function deleteFile(filename) {
-            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
-                return;
+        try {
+          const response = await fetch(
+            `/api/files/${encodeURIComponent(filename)}`,
+            {
+              method: "DELETE",
             }
+          );
 
-            try {
-                const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    throw new Error('Delete failed');
-                }
-            } catch (error) {
-                console.error('Delete error:', error);
-                alert('Failed to delete file. Please try again.');
-            }
+          if (!response.ok) {
+            throw new Error("Delete failed");
+          }
+        } catch (error) {
+          console.error("Delete error:", error);
+          alert("Failed to delete file. Please try again.");
         }
+      }
 
-        // Utility functions
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
+      // Utility functions
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
-        function updateUI() {
-            updateConnectionStatus();
-            renderFileList();
-        }
+      function updateUI() {
+        updateConnectionStatus();
+        renderFileList();
+      }
     </script>
-</body>
+  </body>
 </html>
